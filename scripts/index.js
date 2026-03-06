@@ -3,16 +3,15 @@ const createElements = (arr) => {
   return htmlElements.join(" ");
 };
 
-const manageSpinner = (status) =>{
-  if(status == true){
-    document.getElementById('spinner').classList.remove('hidden');
-    document.getElementById('word-container').classList.add('hidden');
+const manageSpinner = (status) => {
+  if (status == true) {
+    document.getElementById("spinner").classList.remove("hidden");
+    document.getElementById("word-container").classList.add("hidden");
+  } else {
+    document.getElementById("word-container").classList.remove("hidden");
+    document.getElementById("spinner").classList.add("hidden");
   }
-  else{
-    document.getElementById('word-container').classList.remove('hidden');
-    document.getElementById('spinner').classList.add('hidden');
-  }
-}
+};
 
 const loadLessons = () => {
   fetch("https://openapi.programming-hero.com/api/levels/all")
@@ -38,22 +37,6 @@ const loadLevelWord = (id) => {
       displayLevelWord(data.data);
     });
 };
-
-// {
-//     "word": "Grateful",
-//     "meaning": "কৃতজ্ঞ",
-//     "pronunciation": "গ্রেটফুল",
-//     "level": 3,
-//     "sentence": "I am grateful for your help.",
-//     "points": 3,
-//     "partsOfSpeech": "adjective",
-//     "synonyms": [
-//         "thankful",
-//         "appreciative",
-//         "obliged"
-//     ],
-//     "id": 7
-// }
 
 const loadWordDetail = async (id) => {
   const url = `https://openapi.programming-hero.com/api/word/${id}`;
@@ -99,17 +82,10 @@ const displayLevelWord = (words) => {
         <h2 class="font-bold text-4xl">নেক্সট Lesson এ যান</h2>
     </div>
       `;
-      manageSpinner(false);
+    manageSpinner(false);
     return;
   }
   // 2. get into every lessons
-  //   {
-  //     "id": 4,
-  //     "level": 5,
-  //     "word": "Diligent",
-  //     "meaning": "পরিশ্রমী",
-  //     "pronunciation": "ডিলিজেন্ট"
-  // }
   words.forEach((word) => {
     // 3. create element
     const card = document.createElement("div");
@@ -155,3 +131,20 @@ const displayLessons = (lessons) => {
   }
 };
 loadLessons();
+
+document.getElementById("btn-search").addEventListener("click", () => {
+  removeActive();
+  const input = document.getElementById("input-search");
+  const searchValue = input.value.trim().toLowerCase();
+  console.log(searchValue);
+  fetch("https://openapi.programming-hero.com/api/words/all")
+    .then((res) => res.json())
+    .then((data) => {
+      const allWords = data.data;
+      console.log(allWords);
+      const filterWords = allWords.filter((word) =>
+        word.word.toLowerCase().includes(searchValue),
+      );
+      displayLevelWord(filterWords);
+    });
+});
